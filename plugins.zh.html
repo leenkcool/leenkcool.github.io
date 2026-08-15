@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="zh"><head><meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Blue-Whale-Harness · DSH 插件总表（中英双语）</title>
+<title>Blue-Whale-Harness · DSH 插件总表</title>
 <style>
 :root{--bg:#0d1117;--fg:#c9d1d9;--mut:#8b949e;--acc:#58a6ff;--bd:#30363d;--odd:#161b22}
 *{box-sizing:border-box}
@@ -21,13 +21,13 @@ a{color:var(--acc);text-decoration:none}
 a:hover{text-decoration:underline}
 .tag{display:inline-block;padding:1px 6px;border:1px solid var(--bd);border-radius:10px;font-size:11px;color:var(--mut)}
 .yes{color:#3fb950}.no{color:#8b949e}
-.intent{color:var(--mut);max-width:300px}
+.intent{color:var(--mut);max-width:360px}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .repo-link{margin:2px 0 8px;font-size:13px}
 </style></head>
 <body>
 <header>
-<h1>Blue-Whale-Harness · DSH 插件总表（中英双语）</h1>
+<h1>Blue-Whale-Harness · DSH 插件总表</h1>
 <div class="repo-link"><a href="https://github.com/leenkcool/Blue-Whale-Harness" target="_blank" rel="noopener">📦 源码仓库 · Blue-Whale-Harness</a></div>
 <div class="bar">
 <input type="search" id="q" placeholder="搜索仓库 / 意图 / 分类 / 技术栈…">
@@ -39,8 +39,7 @@ a:hover{text-decoration:underline}
 </header>
 <table><thead><tr>
 <th data-k="repo">仓库</th>
-<th data-k="intentZh">意图(中文)</th>
-<th data-k="intentEn">Intent(EN)</th>
+<th data-k="intent">意图</th>
 <th data-k="category">分类</th>
 <th data-k="isDsh">真DSH</th>
 <th data-k="language">语言</th>
@@ -58,13 +57,13 @@ const catSel=document.getElementById("cat"),dshSel=document.getElementById("dsh"
 [...new Set(DATA.map(d=>d.category))].sort().forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;catSel.appendChild(o)});
 let sortDir=-1;
 function esc(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
-function rowHtml(r){return '<tr>'+'<td><a href="'+r.url+'" target="_blank">'+r.repo+'</a></td>'+'<td class="intent">'+esc(r.intentZh||'')+'</td>'+'<td class="intent">'+esc(r.intentEn||'')+'</td>'+'<td><span class="tag">'+r.category+'</span></td>'+'<td class="'+r.isDsh+'">'+(r.isDsh==='yes'?'✔':'—')+'</td>'+'<td>'+(r.language||'')+'</td>'+'<td class="num">'+r.stars+'</td><td class="num">'+r.forks+'</td><td class="num">'+r.sizeHuman+'</td>'+'<td>'+(r.created)+'</td><td>'+(r.updated)+'</td>'+'<td>'+(r.license||'')+'</td><td>'+(r.compat||'')+'</td></tr>';}
+function rowHtml(r){return '<tr><td><a href="'+r.url+'" target="_blank">'+r.repo+'</a></td><td class="intent">'+esc(r.intentZh||'')+'</td><td><span class="tag">'+r.category+'</span></td><td class="'+r.isDsh+'">'+(r.isDsh==='yes'?'✔':'—')+'</td><td>'+(r.language||'')+'</td><td class="num">'+r.stars+'</td><td class="num">'+r.forks+'</td><td class="num">'+r.sizeHuman+'</td><td>'+(r.created)+'</td><td>'+(r.updated)+'</td><td>'+(r.license||'')+'</td><td>'+(r.compat||'')+'</td></tr>';}
 function render(){
  const qv=q.value.toLowerCase(),cv=catSel.value,dv=dshSel.value,sk=sortSel.value;
- let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||(d.repo+" "+d.intentZh+" "+d.intentEn+" "+d.category+" "+d.tech+" "+d.language).toLowerCase().includes(qv)));
+ let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||(d.intentZh+' '+d.intentEn+' d.repo+" "+d.category+" "+d.tech+" "+d.language).toLowerCase().includes(qv)));
  rows.sort((a,b)=>{let x=a[sk],y=b[sk];if(sk==="repo"||sk==="created"||sk==="updated"){x=String(x);y=String(y);return sortDir*x.localeCompare(y);}return sortDir*((x||0)-(y||0));});
  tb.innerHTML=rows.map(rowHtml).join("");
- cnt.textContent=rows.length+" / "+DATA.length+" 个";
+ cnt.textContent=rows.length+" / "+DATA.length+" items";
 }
 q.oninput=render;catSel.onchange=render;dshSel.onchange=render;sortSel.onchange=render;
 document.querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{sortSel.value=th.dataset.k;sortDir*=-1;render();});
