@@ -38,7 +38,7 @@ a:hover{text-decoration:underline}
 <input type="search" id="q" placeholder="搜索仓库 / 意图 / 分类 / 技术栈…">
 <select id="cat"><option value="">全部分类</option></select>
 <select id="dsh"><option value="">全部</option><option value="yes">仅真·DSH</option><option value="no">仅非DSH</option></select>
-<select id="sort"><option value="stars">按 STAR</option><option value="forks">按 FORK</option><option value="created">按创建时间</option><option value="updated">按更新时间</option><option value="repo">按仓库名</option></select>
+<select id="sort"><option value="stars">按 STAR</option><option value="forks">按 FORK</option><option value="sizeBytes">按大小</option><option value="created">按创建时间</option><option value="updated">按更新时间</option><option value="repo">按仓库名</option><option value="category">按分类</option><option value="isDsh">按 DSH</option><option value="language">按语言</option><option value="license">按 License</option><option value="compat">按兼容性</option><option value="intentZh">按意图</option></select>
 <span class="stat" id="cnt"></span>
 <button class="theme-btn" id="themeBtn"></button>
 </div>
@@ -46,7 +46,7 @@ a:hover{text-decoration:underline}
 <div class="banner-img"><img src="https://leenkcool.github.io/pindaoh.png" alt="频道"></div>
 <table><thead><tr>
 <th data-k="repo">仓库</th>
-<th data-k="intent">意图</th>
+<th data-k="intentZh">意图</th>
 <th data-k="category">分类</th>
 <th data-k="isDsh">真DSH</th>
 <th data-k="language">语言</th>
@@ -67,8 +67,9 @@ function esc(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":
 function rowHtml(r){return '<tr><td><a href="'+r.url+'" target="_blank">'+r.repo+'</a></td><td class="intent">'+esc(r.intentZh||'')+'</td><td><span class="tag">'+r.category+'</span></td><td class="'+r.isDsh+'">'+(r.isDsh==='yes'?'✔':'—')+'</td><td>'+(r.language||'')+'</td><td class="num">'+r.stars+'</td><td class="num">'+r.forks+'</td><td class="num">'+r.sizeHuman+'</td><td>'+(r.created)+'</td><td>'+(r.updated)+'</td><td>'+(r.license||'')+'</td><td>'+(r.compat||'')+'</td></tr>';}
 function render(){
  const qv=q.value.toLowerCase(),cv=catSel.value,dv=dshSel.value,sk=sortSel.value;
- let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||(d.intentZh+' '+d.intentEn+' d.repo+" "+d.category+" "+d.tech+" "+d.language).toLowerCase().includes(qv)));
- rows.sort((a,b)=>{let x=a[sk],y=b[sk];if(sk==="repo"||sk==="created"||sk==="updated"){x=String(x);y=String(y);return sortDir*x.localeCompare(y);}return sortDir*((x||0)-(y||0));});
+ let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||((d.intentZh||'')+' '+(d.intentEn||'')+' '+(d.repo||'')+' '+(d.category||'')+' '+(d.tech||'')+' '+(d.language||'')).toLowerCase().includes(qv)));
+ const stringSortKeys=new Set(["repo","category","isDsh","language","created","updated","license","compat","intentZh","intentEn"]);
+ rows.sort((a,b)=>{const x=a[sk],y=b[sk];if(stringSortKeys.has(sk))return sortDir*String(x??"").localeCompare(String(y??""));return sortDir*(Number(x??0)-Number(y??0));});
  tb.innerHTML=rows.map(rowHtml).join("");
  cnt.textContent=rows.length+" / "+DATA.length+" items";
 }

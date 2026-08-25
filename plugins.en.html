@@ -38,7 +38,7 @@ a:hover{text-decoration:underline}
 <input type="search" id="q" placeholder="Search repo / intent / category / tech…">
 <select id="cat"><option value="">All categories</option></select>
 <select id="dsh"><option value="">All</option><option value="yes">DSH only</option><option value="no">Non-DSH</option></select>
-<select id="sort"><option value="stars">by STAR</option><option value="forks">by FORK</option><option value="created">by created</option><option value="updated">by updated</option><option value="repo">by repo</option></select>
+<select id="sort"><option value="stars">by STAR</option><option value="forks">by FORK</option><option value="sizeBytes">by size</option><option value="created">by created</option><option value="updated">by updated</option><option value="repo">by repo</option><option value="category">by category</option><option value="isDsh">by DSH</option><option value="language">by language</option><option value="license">by license</option><option value="compat">by compatibility</option><option value="intentEn">by intent</option></select>
 <span class="stat" id="cnt"></span>
 <button class="theme-btn" id="themeBtn"></button>
 </div>
@@ -46,7 +46,7 @@ a:hover{text-decoration:underline}
 <div class="banner-img"><img src="https://leenkcool.github.io/pindaoh.png" alt="频道"></div>
 <table><thead><tr>
 <th data-k="repo">Repo</th>
-<th data-k="intent">Intent</th>
+<th data-k="intentEn">Intent</th>
 <th data-k="category">Category</th>
 <th data-k="isDsh">DSH</th>
 <th data-k="language">Lang</th>
@@ -67,8 +67,9 @@ function esc(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":
 function rowHtml(r){return '<tr><td><a href="'+r.url+'" target="_blank">'+r.repo+'</a></td><td class="intent">'+esc(r.intentEn||'')+'</td><td><span class="tag">'+r.category+'</span></td><td class="'+r.isDsh+'">'+(r.isDsh==='yes'?'✔':'—')+'</td><td>'+(r.language||'')+'</td><td class="num">'+r.stars+'</td><td class="num">'+r.forks+'</td><td class="num">'+r.sizeHuman+'</td><td>'+(r.created)+'</td><td>'+(r.updated)+'</td><td>'+(r.license||'')+'</td><td>'+(r.compat||'')+'</td></tr>';}
 function render(){
  const qv=q.value.toLowerCase(),cv=catSel.value,dv=dshSel.value,sk=sortSel.value;
- let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||(d.intentZh+' '+d.intentEn+' d.repo+" "+d.category+" "+d.tech+" "+d.language).toLowerCase().includes(qv)));
- rows.sort((a,b)=>{let x=a[sk],y=b[sk];if(sk==="repo"||sk==="created"||sk==="updated"){x=String(x);y=String(y);return sortDir*x.localeCompare(y);}return sortDir*((x||0)-(y||0));});
+ let rows=DATA.filter(d=>(!cv||d.category===cv)&&(!dv||d.isDsh===dv)&&(!qv||((d.intentZh||'')+' '+(d.intentEn||'')+' '+(d.repo||'')+' '+(d.category||'')+' '+(d.tech||'')+' '+(d.language||'')).toLowerCase().includes(qv)));
+ const stringSortKeys=new Set(["repo","category","isDsh","language","created","updated","license","compat","intentZh","intentEn"]);
+ rows.sort((a,b)=>{const x=a[sk],y=b[sk];if(stringSortKeys.has(sk))return sortDir*String(x??"").localeCompare(String(y??""));return sortDir*(Number(x??0)-Number(y??0));});
  tb.innerHTML=rows.map(rowHtml).join("");
  cnt.textContent=rows.length+" / "+DATA.length+" items";
 }
